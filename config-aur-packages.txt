@@ -1,0 +1,12 @@
+kwin-scripts-krohnkite-git
+plasma5-applets-latte-separator
+plasma5-applets-latte-spacer
+plasma5-applets-virtual-desktop-bar-git
+plasma5-applets-window-appmenu
+plasma5-applets-window-title
+tlp
+ttf-jetbrains-mono
+ttf-meslo-nerd-font-powerlevel10k
+tuxedo-keyboard
+vscodium-bin
+vscodium-bin-marketplace
