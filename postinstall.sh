@@ -43,16 +43,21 @@ echo "${hostname}" > /etc/hostname
 
 echo -e "[${B}INFO${W}] Configure misc"
 echo -e "options tuxedo-keyboard mode=0 brightness=255 color_left=0x00FF00 color_center=0x00FF00 color_right=0x00FF00" > /etc/modprobe.d/tuxedo_keyboard.conf
-echo -e "SUBSYSTEM==\"block\", ENV{ID_FS_TYPE}==\"ntfs\", ENV{ID_FS_TYPE}=\"ntfs3\"" > /etc/udev/rules.d/ntfs3_by_default.rules
-echo -e "ENV{ID_FS_USAGE}==\"filesystem|other|crypto\", ENV{UDISKS_FILESYSTEM_SHARED}=\"1\"" > /etc/udev/rules.d/99-udisks2.rules
-echo -e "ntfs_defaults=uid=\$UID,gid=\$GID,noatime,prealloc" > /etc/udisks2/mount_options.conf
 echo -e "[Match]\nName=eth0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=10" > /etc/systemd/network/10-wired.network
 echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20" > /etc/systemd/network/25-wireless.network
+
+# Configure paru.conf
+echo -e "[${B}INFO${W}] Modifying paru configuration"
+sed -i 's #RemoveMake RemoveMake ; s #CleanAfter CleanAfter ; s #\[bin\] \[bin\] ; s #Sudo Sudo' /etc/paru.conf
+pacman -Syu --noconfirm
 
 # Create user
 echo -e "[${B}INFO${W}] Generate user & password"
 useradd -m -G wheel -s /bin/zsh "${username}"
-echo -e "${username} ALL=(ALL) ALL" > /etc/sudoers.d/${username}
+echo -e "permit :wheel\n" > /etc/doas.conf
+chown -c root:root /etc/doas.conf
+chmod -c 0400 /etc/doas.conf
+doas -C /etc/doas.conf && echo "config ok" || echo "config error
 
 # Change password for root & ${username}
 echo -e "Change password for user ${Y}root${W} :"
@@ -60,20 +65,20 @@ passwd root
 echo -e "Change password for user ${Y}${username}${W} :"
 passwd "${username}"
 
-# Install yay
-echo -e "[${B}INFO${W}] Install ${Y}yay${W}"
+# Install paru
+echo -e "[${B}INFO${W}] Install ${Y}paru${W}"
 cd /tmp
-git clone https://aur.archlinux.org/yay.git
-cd yay
+git clone https://aur.archlinux.org/paru.git
+cd paru
 chown -R ${username}: .
-sudo -u ${username} makepkg -si
+doas -u ${username} makepkg -si
 cd
-rm -rf /tmp/yay
-yay --version
+rm -rf /tmp/paru
+paru --version
 
 # Install AUR Packages
 echo -e "[${B}INFO${W}] Install ${Y}AUR${W} packages"
-sudo -u ${username} yay -Sy - < /opt/config-aur-packages.txt
+doas -u ${username} paru -Sy - < /opt/config-aur-packages.txt
 
 # Start services
 echo -e "[${B}INFO${W}] Enable systemctl services"

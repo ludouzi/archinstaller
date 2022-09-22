@@ -4,6 +4,7 @@ base-devel
 bluez
 bluez-utils
 discord
+doas
 dolphin
 firefox
 gwenview
@@ -22,7 +23,6 @@ nvidia
 nvidia-prime
 nvidia-settings
 nvidia-utils
-latte-dock
 openssh
 p7zip
 packagekit-qt5
