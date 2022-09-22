@@ -49,7 +49,7 @@ echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20"
 # Configure paru.conf
 echo -e "[${B}INFO${W}] Modifying paru configuration"
 sed -i 's #RemoveMake RemoveMake ; s #CleanAfter CleanAfter ; s #\[bin\] \[bin\] ; s/#Sudo = doas/Sudo = doas/' /etc/paru.conf
-pacman -Syu --noconfirm
+paru -Syu --noconfirm
 
 # Create user
 echo -e "[${B}INFO${W}] Generate user & password"
