@@ -1,5 +1,6 @@
 ark
 base-devel
+cmake
 discord
 dolphin
 firefox
@@ -21,7 +22,6 @@ nvidia-utils
 neovim
 openssh
 p7zip
-packagekit-qt5
 plasma
 spectacle
 sshfs
