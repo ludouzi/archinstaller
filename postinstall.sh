@@ -79,9 +79,6 @@ paru -Syu --noconfirm
 echo -e "[${B}INFO${W}] Install ${Y}AUR${W} packages"
 sudo -u ${username} paru -Sy --needed - < /opt/config-aur-packages.txt
 
-# Setup systemd-resolve
-ln -rsf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-
 # Start services
 echo -e "[${B}INFO${W}] Enable systemctl services"
 systemctl enable iwd
