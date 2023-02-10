@@ -45,6 +45,7 @@ echo -e "[${B}INFO${W}] Configure misc"
 echo -e "options tuxedo-keyboard mode=0 brightness=255 color_left=0xFF0000 color_center=0xFF0000 color_right=0xFF0000" > /etc/modprobe.d/tuxedo_keyboard.conf
 echo -e "[Match]\nName=eth0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=10" > /etc/systemd/network/10-wired.network
 echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20" > /etc/systemd/network/25-wireless.network
+echo -e "[General]\nNumlock=on" > /etc/sddm.conf
 
 # Create user
 echo -e "[${B}INFO${W}] Generate user & password"
