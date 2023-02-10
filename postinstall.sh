@@ -50,8 +50,8 @@ echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20"
 echo -e "[${B}INFO${W}] Generate user & password"
 useradd -m -G wheel -s /bin/zsh "${username}"
 echo -e "Defaults passwd_timeout=0\n%wheel ALL=(ALL:ALL) ALL\n" > /etc/sudoers.d/wheel
-chown -c root:root /etc/sudoers.d/wheel.conf
-chmod -c 0400 /etc/sudoers.d/wheel.conf
+chown -c root:root /etc/sudoers.d/wheel
+chmod -c 0400 /etc/sudoers.d/wheel
 
 # Change password for root & ${username}
 echo -e "Change password for user ${Y}root${W} :"
