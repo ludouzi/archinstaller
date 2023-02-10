@@ -69,17 +69,23 @@ parted ${system_disk} print | awk '$1+0' | column -t
 read -r -p "Please enter a partition: " efi_partition
 efi_partition="${system_disk}${efi_partition}"
 
-echo -e "\n[${B}INFO${W}] Select swap partition"
-echo "Partition(s) available:"
-parted ${system_disk} print | awk '$1+0' | column -t
-read -r -p "Please enter a partition: " swap_partition
-swap_partition="${system_disk}${swap_partition}"
-
 echo -e "\n[${B}INFO${W}] Select home partition"
 echo "Partition(s) available:"
 parted ${system_disk} print | awk '$1+0' | column -t
 read -r -p "Please enter a partition: " home_partition
 home_partition="${system_disk}${home_partition}"
+
+read -r -p "Create swap? (y/n)" create_swap
+if [[ $create_swap = y ]] ; then
+	echo -e "\n[${B}INFO${W}] Select swap partition"
+	echo "Partition(s) available:"
+	parted ${system_disk} print | awk '$1+0' | column -t
+	read -r -p "Please enter a partition: " swap_partition
+	swap_partition="${system_disk}${swap_partition}"
+	
+	# Mount swap
+	swapon ${swap_partition}
+fi
 
 # Mount root
 echo -e "\n[${B}INFO${W}] Mount Root Partition"
@@ -89,9 +95,6 @@ mount "${system_partition}" /mnt
 echo -e "[${B}INFO${W}] Mount EFI Partition"
 mkdir /mnt/boot
 mount "${efi_partition}" /mnt/boot
-
-# Mount swap
-swapon ${swap_partition}
 
 # Mount home
 echo -e "[${B}INFO${W}] Mount Home Partition"
