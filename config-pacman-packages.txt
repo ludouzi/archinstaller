@@ -4,6 +4,7 @@ cmake
 discord
 dolphin
 firefox
+git
 gwenview
 intel-undervolt
 iwd
