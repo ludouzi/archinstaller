@@ -1,7 +1,7 @@
+envycontrol
 kwin-bismuth
 tlp
 ttf-jetbrains-mono
 ttf-meslo-nerd-font-powerlevel10k
-tuxedo-keyboard
 vscodium-bin
 vscodium-bin-marketplace
