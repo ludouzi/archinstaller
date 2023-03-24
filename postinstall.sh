@@ -42,17 +42,20 @@ echo "KEYMAP=${keymap}" > /etc/vconsole.conf
 echo "${hostname}" > /etc/hostname
 
 echo -e "[${B}INFO${W}] Configure misc"
-echo -e "options tuxedo-keyboard mode=0 brightness=255 color_left=0xFF0000 color_center=0xFF0000 color_right=0xFF0000" > /etc/modprobe.d/tuxedo_keyboard.conf
 echo -e "[Match]\nName=eth0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=10" > /etc/systemd/network/10-wired.network
 echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20" > /etc/systemd/network/25-wireless.network
 echo -e "[General]\nNumlock=on" > /etc/sddm.conf
 
-# Create user
-echo -e "[${B}INFO${W}] Generate user & password"
-useradd -m -G wheel -s /bin/zsh "${username}"
-echo -e "Defaults passwd_timeout=0\n%wheel ALL=(ALL:ALL) ALL\n" > /etc/sudoers.d/wheel
-chown -c root:root /etc/sudoers.d/wheel
-chmod -c 0400 /etc/sudoers.d/wheel
+# Create user (if not already exists)
+if !id -u "${username}" >/dev/null 2>&1; then
+    echo -e "[${B}INFO${W}] Generate user & password"
+    useradd -m -G wheel -s "${shell}" "${username}"
+    echo -e "Defaults passwd_timeout=0\n%wheel ALL=(ALL:ALL) ALL\n" > /etc/sudoers.d/wheel
+    chown -c root:root /etc/sudoers.d/wheel
+    chmod -c 0400 /etc/sudoers.d/wheel
+else
+    echo -e "[${B}INFO${W}] User already exists"
+fi 
 
 # Change password for root & ${username}
 echo -e "Change password for user ${Y}root${W} :"
