@@ -1,7 +1,4 @@
 envycontrol
-kwin-bismuth
-tlp
-ttf-jetbrains-mono
-ttf-meslo-nerd-font-powerlevel10k
+kmonad-bin
 vscodium-bin
 vscodium-bin-marketplace

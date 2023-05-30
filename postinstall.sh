@@ -41,11 +41,6 @@ echo "LANG=${locale}.UTF-8" > /etc/locale.conf
 echo "KEYMAP=${keymap}" > /etc/vconsole.conf
 echo "${hostname}" > /etc/hostname
 
-echo -e "[${B}INFO${W}] Configure misc"
-echo -e "[Match]\nName=eth0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=10" > /etc/systemd/network/10-wired.network
-echo -e "[Match]\nName=wlan0\n\n[Network]\nDHCP=yes\n\n[DHCPv4]\nRouteMetric=20" > /etc/systemd/network/25-wireless.network
-echo -e "[General]\nNumlock=on" > /etc/sddm.conf
-
 # Create user (if not already exists)
 if id -u "${username}" >/dev/null 2>&1; then
     echo -e "[${B}INFO${W}] User already exists"
@@ -85,11 +80,10 @@ sudo -u ${username} paru -Sy --needed - < /opt/config-aur-packages.txt
 
 # Start services
 echo -e "[${B}INFO${W}] Enable systemctl services"
-systemctl enable iwd
-systemctl enable systemd-networkd
-systemctl enable systemd-resolved
-systemctl enable sddm
+systemctl enable kmonad
+systemctl enable NetworkManager
 systemctl enable sshd
+systemctl enable tlp
 
 # Reboot
 echo -e "[${B}INFO${W}] Post-install complete!"
