@@ -13,7 +13,6 @@ feh
 firefox
 flameshot
 git
-grub
 intel-undervolt
 kate
 kitty
@@ -31,7 +30,7 @@ nvidia-settings
 nvidia-utils
 neovim
 openssh
-p7zi
+p7zip
 picom
 pipewire-alsa
 pipewire-pulse
