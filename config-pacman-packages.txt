@@ -1,6 +1,4 @@
-adobe-source-han-sans-cn-fonts
-adobe-source-han-sans-jp-fonts
-adobe-source-han-sans-kr-fonts
+noto-fonts-cjk
 ark
 base-devel
 bspwm
@@ -13,21 +11,17 @@ feh
 firefox
 flameshot
 git
+hyprland
 intel-undervolt
 kate
 kitty
 kvantum
-linux-headers
 lxappearance-gtk3
 mpv
 neofetch
 networkmanager
 ninja
 ntfs-3g
-nvidia
-nvidia-prime
-nvidia-settings
-nvidia-utils
 neovim
 openssh
 p7zip
@@ -41,6 +35,7 @@ qt5ct
 qt6ct
 redshift
 rofi
+sddm
 sshfs
 sudo
 sxhkd
@@ -49,5 +44,7 @@ unrar
 unzip
 valgrind
 vi
+waybar
 wireplumber
+xorg-xsetroot
 zsh

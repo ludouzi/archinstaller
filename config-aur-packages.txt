@@ -1,4 +1,2 @@
-envycontrol
-kmonad-bin
 vscodium-bin
 vscodium-bin-marketplace
