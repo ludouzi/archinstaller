@@ -7,10 +7,12 @@ ffmpegthumbnailer
 firefox
 gdb
 git
+gnome-keyring
 gtest
 gvfs
 hyprland
 intel-undervolt
+libsecret
 kitty
 kvantum
 man-db
