@@ -61,9 +61,7 @@ passwd "${username}"
 # Install paru
 echo -e "[${B}INFO${W}] Install ${Y}paru${W}"
 cd /tmp
-if [ ! -d paru ]; then
-    git clone https://aur.archlinux.org/paru.git
-fi
+git clone https://aur.archlinux.org/paru.git
 cd paru
 chown -R ${username}: .
 sudo -u ${username} makepkg -si
@@ -82,8 +80,8 @@ sudo -u ${username} paru -Sy --needed - < /opt/config-aur-packages.txt
 
 # Start services
 echo -e "[${B}INFO${W}] Enable systemctl services"
+systemctl enable intel-undervolt
 systemctl enable NetworkManager
-systemctl enable sddm
 systemctl enable sshd
 systemctl enable tlp
 

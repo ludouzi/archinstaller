@@ -1,2 +1,9 @@
+cmake-format
+hyprlock
+pywal-16-colors
+swaync
+swayosd-git
+ulauncher
 vscodium-bin
 vscodium-bin-marketplace
+wlogout
