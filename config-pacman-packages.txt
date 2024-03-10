@@ -45,10 +45,13 @@ tlp
 unrar
 unzip
 vi
+vimiv
 wireplumber
 wlsunset
 xarchiver
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 xdg-user-dirs
+zathura
+zathura-pdf-mupdf
 zsh
