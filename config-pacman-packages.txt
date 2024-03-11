@@ -3,7 +3,6 @@ btop
 clang
 cmake
 copyq
-ffmpegthumbnailer
 firefox
 gdb
 git
@@ -17,6 +16,9 @@ kitty
 kvantum
 man-db
 mpv
+nemo
+nemo-fileroller
+nemo-terminal
 neovim
 networkmanager
 ninja
@@ -36,11 +38,6 @@ qt6ct
 qtcreator
 sshfs
 sudo
-thunar
-thunar-archive-plugin
-thunar-media-tags-plugin
-thunar-volman
-tumbler
 tlp
 unrar
 unzip
@@ -48,7 +45,6 @@ vi
 vimiv
 wireplumber
 wlsunset
-xarchiver
 xdg-desktop-portal-gtk
 xdg-desktop-portal-hyprland
 xdg-user-dirs
