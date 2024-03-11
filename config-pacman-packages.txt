@@ -8,9 +8,9 @@ gdb
 git
 gnome-keyring
 gtest
-gvfs
 hyprland
 intel-undervolt
+jq
 libsecret
 kitty
 kvantum
@@ -21,6 +21,7 @@ nemo-fileroller
 nemo-terminal
 neovim
 networkmanager
+network-manager-applet
 ninja
 noto-fonts-cjk
 ntfs-3g
@@ -38,11 +39,13 @@ qt6ct
 qtcreator
 sshfs
 sudo
+swaybg
 tlp
 unrar
 unzip
 vi
 vimiv
+waybar
 wireplumber
 wlsunset
 xdg-desktop-portal-gtk
