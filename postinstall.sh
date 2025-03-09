@@ -80,10 +80,8 @@ sudo -u ${username} paru -Sy --needed - < /opt/config-aur-packages.txt
 
 # Start services
 echo -e "[${B}INFO${W}] Enable systemctl services"
-systemctl enable intel-undervolt
 systemctl enable NetworkManager
 systemctl enable sshd
-systemctl enable tlp
 
 # Reboot
 echo -e "[${B}INFO${W}] Post-install complete!"

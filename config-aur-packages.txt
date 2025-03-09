@@ -1,9 +1,10 @@
 cmake-format
 hyprlock
-pywal-16-colors
+python-pywal16
 swaync
 swayosd-git
 ulauncher
 vscodium-bin
 vscodium-bin-marketplace
 wlogout
+zen-browser-bin
