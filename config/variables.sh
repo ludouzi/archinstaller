@@ -8,9 +8,9 @@ B='\e[96m' # Blue
 Y='\e[93m' # Yellow
 
 # Configuration
-keymap="uk"
+keymap="us"
 hostname="obsidian"
 timezone="Europe/London"
-locale="en_GB"
 username="luke"
 shell="/bin/zsh"
+locales="en_US.UTF-8 zh_CN.UTF-8"

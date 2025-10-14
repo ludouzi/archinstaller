@@ -1,0 +1,14 @@
+cmake-format
+elephant
+elephant-calc
+elephant-clipboard
+elephant-desktopapplications
+elephant-symbols
+elephant-unicode
+hyprlock
+protonplus
+protontricks
+qt6ct-kde
+walker-bin
+wlogout
+zen-browser-bin
