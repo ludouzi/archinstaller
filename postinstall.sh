@@ -1,88 +1,201 @@
 #!/bin/bash
-################################################################################
-#
-# Author  : Luke Taylor
-# GitHub  : https://github.com/ludouzi/archinstaller
-#
-################################################################################
 
-set -e
+set -euo pipefail
+
+source /opt/archinstaller/variables.sh
 
 ################################################################################
-# Source variables
+# Functions
 ################################################################################
 
-. config-variables.sh
+run_with_status() {
+    local message="$1"
+    shift
+    echo -e "[${B}INFO${W}] $message"
+    if "$@"; then
+        echo -e "[${G}OK${W}] $message completed"
+    else
+        echo -e "[${R}ERROR${W}] $message failed"
+        return 1
+    fi
+}
 
-################################################################################
-# Post-install
-################################################################################
+configure_pacman() {   
+    if [[ ! -f /opt/archinstaller/pacman.conf ]]; then
+        echo -e "[${R}ERROR${W}] Custom pacman.conf not found at /opt/archinstaller/pacman.conf"
+        return 1
+    fi
+    
+    cp /opt/archinstaller/pacman.conf /etc/pacman.conf
+    chmod 644 /etc/pacman.conf
+    echo -e "[${G}OK${W}] Custom pacman.conf applied successfully"
+}
 
-# Install the latest archlinux-keyring
-echo -e "[${B}INFO${W}] Install the latest ${Y}archlinux-keyring${W} package"
-pacman -Sy --needed archlinux-keyring
+install_pacman_packages() {
+    if [[ ! -f /opt/archinstaller/pacman-packages.txt ]]; then
+        echo "Error: Package list not found at /opt/archinstaller/pacman-packages.txt"
+        return 1
+    fi
+    
+    # Check if all packages exist before installing
+    if ! pacman -Sp --print-format '%n' $(grep -v '^#' /opt/archinstaller/pacman-packages.txt) > /dev/null 2>&1; then
+        echo "Warning: Some packages in the list may not be available"
+    fi
+    
+    pacman -Sy --needed --noconfirm - < /opt/archinstaller/pacman-packages.txt
+}
 
-# Configure pacman.conf
-echo -e "[${B}INFO${W}] Modifying pacman configuration"
-sed -i 's #Color Color ; s #\[multilib\] \[multilib\] ; /\[multilib\]/{n;s #Include Include }' /etc/pacman.conf
-pacman -Syu --noconfirm
+install_aur_packages() {
+    if [[ ! -f /opt/archinstaller/aur-packages.txt ]]; then
+        echo "Error: AUR package list not found at /opt/archinstaller/aur-packages.txt"
+        return 1
+    fi
+    
+    sudo -u "${username}" paru -Sy --needed --noconfirm - < /opt/archinstaller/aur-packages.txt
+}
 
-# Install all packages
-echo -e "[${B}INFO${W}] Install ${Y}pacman${W} packages"
-pacman -Sy --needed - < /opt/config-pacman-packages.txt
-
-# Configuration
-echo -e "[${B}INFO${W}] Configure system localization"
-ln -sf /usr/share/zoneinfo/"${timezone}" /etc/localtime
-hwclock --systohc
-sed -i "s|^#${locale}.UTF-8|${locale}.UTF-8|" /etc/locale.gen
-locale-gen
-echo "LANG=${locale}.UTF-8" > /etc/locale.conf
-echo "KEYMAP=${keymap}" > /etc/vconsole.conf
-echo "${hostname}" > /etc/hostname
-
-# Create user (if not already exists)
-if id -u "${username}" >/dev/null 2>&1; then
-    echo -e "[${B}INFO${W}] User already exists"
-else
-    echo -e "[${B}INFO${W}] Generate user & password"
+create_user() {
+    local username="$1"
+    local shell="$2"
+    
+    if id -u "${username}" >/dev/null 2>&1; then
+        echo -e "[${B}INFO${W}] User $username already exists"
+        return 0
+    fi
+    
+    echo -e "[${B}INFO${W}] Creating user $username"
     useradd -m -G wheel -s "${shell}" "${username}"
-    echo -e "Defaults passwd_timeout=0\n%wheel ALL=(ALL:ALL) ALL\n" > /etc/sudoers.d/wheel
-    chown -c root:root /etc/sudoers.d/wheel
-    chmod -c 0400 /etc/sudoers.d/wheel
-fi 
+    
+    echo "Defaults passwd_timeout=0" > /etc/sudoers.d/wheel
+    echo "%wheel ALL=(ALL:ALL) ALL" >> /etc/sudoers.d/wheel
+    chown root:root /etc/sudoers.d/wheel
+    chmod 0400 /etc/sudoers.d/wheel
+}
 
-# Change password for root & ${username}
-echo -e "Change password for user ${Y}root${W} :"
-passwd root
-echo -e "Change password for user ${Y}${username}${W} :"
-passwd "${username}"
+change_password() {
+    local username="$1"
+    echo -e "Change password for user ${Y}${username}${W}:"
+    until passwd "${username}"; do
+        echo "Password change failed for $username, please try again"
+    done
+}
 
-# Install paru
-echo -e "[${B}INFO${W}] Install ${Y}paru${W}"
-cd /tmp
-git clone https://aur.archlinux.org/paru.git
-cd paru
-chown -R ${username}: .
-sudo -u ${username} makepkg -si
-cd
-rm -rf /tmp/paru
-paru --version
+install_paru() {
+    local username="$1"
 
-# Configure paru.conf
-echo -e "[${B}INFO${W}] Modifying paru configuration"
-sed -i 's #RemoveMake RemoveMake ; s #CleanAfter CleanAfter ;' /etc/paru.conf
-paru -Syu --noconfirm
+    if command -v paru >/dev/null 2>&1; then
+        echo -e "[${B}INFO${W}] paru is already installed"
+        return 0
+    fi
+    
+    cd /tmp
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    chown -R ${username}:.
+    sudo -u ${username} makepkg -si --noconfirm
+    cd
+    rm -rf /tmp/paru
+    
+    if command -v paru >/dev/null 2>&1; then
+        echo -e "[${G}OK${W}] paru installed successfully"
+        paru --version
+    else
+        echo -e "[${R}ERROR${W}] paru installation failed"
+        return 1
+    fi
+}
 
-# Install AUR Packages
-echo -e "[${B}INFO${W}] Install ${Y}AUR${W} packages"
-sudo -u ${username} paru -Sy --needed - < /opt/config-aur-packages.txt
+configure_kde() {   
+    # Configure applications menu (for dolphin)
+    mkdir /etc/xdg/menus
+    curl -L --fail \
+        https://raw.githubusercontent.com/KDE/plasma-workspace/master/menu/desktop/plasma-applications.menu \
+        -o /etc/xdg/menus/applications.menu
+    
+    if command -v balooctl6 >/dev/null 2>&1; then
+        balooctl6 suspend
+        balooctl6 disable
+        balooctl6 purge
+    fi
+}
 
-# Start services
-echo -e "[${B}INFO${W}] Enable systemctl services"
-systemctl enable NetworkManager
-systemctl enable sshd
+configure_libvirt() {   
+    local username="$1"
+    usermod -aG libvirt "$username"
+}
 
-# Reboot
-echo -e "[${B}INFO${W}] Post-install complete!"
-echo -e "[${B}INFO${W}] Type ${Y}CTRL+D${W} and ${Y}reboot${W} to reboot to Arch."
+################################################################################
+# Main Post-install
+################################################################################
+
+main() {
+    echo -e "\n[${B}INFO${W}] Starting post-installation setup\n"
+
+    run_with_status "Installing latest archlinux-keyring" \
+        pacman -Sy --needed --noconfirm archlinux-keyring
+
+    run_with_status "Configuring pacman with custom configuration" \
+        configure_pacman
+
+    run_with_status "Performing system update" \
+        pacman -Syu --noconfirm
+
+    run_with_status "Installing pacman packages" \
+        install_pacman_packages
+
+    echo -e "[${B}INFO${W}] Configuring system localization"
+    
+    ln -sf "/usr/share/zoneinfo/${timezone}" /etc/localtime
+    hwclock --systohc
+    
+    for locale in $locales; do
+        sed -i "s|^#${locale}|${locale}|" /etc/locale.gen
+    done
+    locale-gen
+    
+    echo "LANG=${locale}.UTF-8" > /etc/locale.conf
+    echo "KEYMAP=${keymap}" > /etc/vconsole.conf
+    echo "${hostname}" > /etc/hostname
+
+    run_with_status "Creating user ${username}" \
+        create_user "${username}" "${shell}"
+
+    change_password "root"
+    change_password "${username}"
+
+    run_with_status "Installing paru AUR helper" \
+        install_paru "${username}"
+
+    # Configure paru
+    if command -v paru >/dev/null 2>&1; then
+        run_with_status "Configuring paru" \
+            sed -i /etc/paru.conf \
+                -e 's/#RemoveMake/RemoveMake/' \
+                -e 's/#CleanAfter/CleanAfter/'
+        
+        run_with_status "Updating system with paru" \
+            paru -Syu --noconfirm
+        
+        run_with_status "Installing AUR packages" \
+            install_aur_packages
+    fi
+
+    run_with_status "Configuring KDE apps" \
+        configure_kde
+
+    # Enable services
+    echo -e "[${B}INFO${W}] Enabling system services"
+    systemctl enable libvirtd
+    systemctl enable NetworkManager
+    systemctl enable sddm
+    systemctl enable sshd
+
+    run_with_status "Configuring libvirt" \
+        configure_libvirt "${username}"
+
+    echo -e "\n[${G}SUCCESS${W}] Post-installation completed successfully!"
+    echo -e "[${B}INFO${W}] Type ${Y}CTRL+D${W} and ${Y}reboot${W} to reboot to Arch."
+    echo -e "[${B}INFO${W}] Don't forget to remove the installation media!\n"
+}
+
+main "$@"
