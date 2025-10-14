@@ -21,10 +21,12 @@ github-cli
 gnome-keyring
 goverlay
 gtest
+hyprcursor
 hypridle
 hyprland
 hyprlock
-hyprlock
+hyprpicker
+hyprshot
 hyprsunset
 jellyfin-mpv-shim
 jq
